@@ -39,12 +39,14 @@ SOURCES += main.cpp\
         qsizeanalyzergui.cpp \
     qraspicamcontrol.cpp \
     qadditem.cpp \
-    utils.cpp
+    utils.cpp \
+    qdisplaylabel.cpp
 
 HEADERS  += qsizeanalyzergui.h \
     qraspicamcontrol.h \
     qadditem.h \
-    utils.h
+    utils.h \
+    qdisplaylabel.h
 
 FORMS    += qsizeanalyzergui.ui \
     qadditem.ui

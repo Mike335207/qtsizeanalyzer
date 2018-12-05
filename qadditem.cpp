@@ -20,7 +20,7 @@ QAddItem::~QAddItem()
 
 void QAddItem::setFrame(cv::Mat &frame)
 {
-    imshow("ADD_ITEM", frame);
+    ui->lb_liveStream->setFrame(frame);
 }
 
 void QAddItem::on_pb_getFrame_clicked()
