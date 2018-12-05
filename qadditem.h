@@ -28,8 +28,11 @@ private slots:
 
     void on_pb_OK_clicked();
 
+    void on_pb_calibrate_clicked();
+
 private:
     Ui::QAddItem *ui;
+    cv::Mat currentFrame;
 };
 
 #endif // QADDITEM_H
