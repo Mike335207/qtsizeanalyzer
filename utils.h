@@ -11,6 +11,8 @@
 void findSquares(const cv::Mat& image, std::vector<std::vector<cv::Point> >& squares);
 void drawSquares(cv::Mat& image, const std::vector<std::vector<cv::Point> >& squares);
 
+void detectAndMeasureObjects(cv::Mat& input);
+
 
 
 

@@ -8,6 +8,8 @@ using namespace std;
 #define THRESH 50
 #define N 11
 
+#define GAUSS_KERN_SIZE 7
+
 
 // helper function:
 // finds a cosine of angle between vectors
@@ -116,3 +118,56 @@ void drawSquares( Mat& image, const vector<vector<Point> >& squares )
     imshow("SQUARES", image);
 }
 
+
+void detectAndMeasureObjects(Mat& input)
+{
+    Mat grayImg, resultImg;
+    input.copyTo(resultImg);
+
+    cvtColor(input, grayImg, CV_BGRA2GRAY);
+    GaussianBlur(grayImg, grayImg, Size(GAUSS_KERN_SIZE, GAUSS_KERN_SIZE), 0);
+
+    //perform edge detection, then perform a dilation + erosion to
+    //close gaps in between object edges
+    Mat edgedImg;
+    Canny(grayImg, edgedImg, 0, THRESH, 5);
+    dilate(edgedImg, edgedImg, Mat(), Point(-1,-1));
+    erode(edgedImg, edgedImg, getStructuringElement(MORPH_RECT, Size(3, 3)));
+
+    imshow("EDGED_IMG", edgedImg);
+
+
+    //find contours in the edge map
+    vector<vector<Point> > contours;
+    findContours(edgedImg, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+
+    // test each contour
+    vector<Point> approx;
+
+    for( size_t i = 0; i < contours.size(); i++ )
+    {
+        approxPolyDP(contours[i], approx, arcLength(contours[i], true)*0.02, true);
+
+        if(fabs(contourArea(approx)) > 1000 && isContourConvex(approx) )
+        {
+            RotatedRect box = minAreaRect(approx);
+
+            Point2f vtx[4];
+            box.points(vtx);
+
+            // Draw the bounding box
+            for( i = 0; i < 4; i++)
+            {
+                line(resultImg, vtx[i], vtx[(i+1)%4], Scalar(0, 255, 0), 1, LINE_AA);
+                circle(resultImg, vtx[i], 5, (0, 0, 255), -1);
+            }
+        }
+
+    }
+
+    imshow("DetectedObjects", resultImg);
+
+
+
+
+}

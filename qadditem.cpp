@@ -45,9 +45,11 @@ void QAddItem::on_pb_calibrate_clicked()
 
         cv::resize(tempFrame, tempFrame, Size(tempFrame.cols*SCALING_F, tempFrame.rows*SCALING_F));
 
-        std::vector<std::vector<cv::Point> > squares;
+        /*std::vector<std::vector<cv::Point> > squares;
         findSquares(tempFrame, squares);
         drawSquares(tempFrame, squares);
-        ui->lb_liveStream->setFrame(tempFrame);
+        ui->lb_liveStream->setFrame(tempFrame);*/
+
+        detectAndMeasureObjects(tempFrame);
     }
 }
