@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>475</width>
-    <height>295</height>
+    <width>658</width>
+    <height>541</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,8 +21,8 @@
     <widget class="QDisplayLabel" name="lb_liveStream">
      <property name="minimumSize">
       <size>
-       <width>320</width>
-       <height>240</height>
+       <width>640</width>
+       <height>490</height>
       </size>
      </property>
      <property name="frameShape">
@@ -41,14 +41,27 @@
      <item>
       <widget class="QPushButton" name="pb_getFrame">
        <property name="text">
-        <string>Capture Frame</string>
+        <string>Start capturing</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pb_calibrate">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Calibrate</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pb_editItem">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Edit Item</string>
        </property>
       </widget>
      </item>

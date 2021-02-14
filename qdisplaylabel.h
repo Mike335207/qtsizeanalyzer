@@ -17,15 +17,19 @@ public:
     QDisplayLabel(QWidget *parent = nullptr);
     void setFrame(cv::Mat frame, int CROP_W = 0, int CROP_H = 0);
     bool isRequestClickPosition(bool isReq);
+    bool isRequestMouseMovePosition(bool isReq);
 
 signals:
     void mouseClickPosition(QPoint);
+    void mouseMovePosition(QPoint);
 
 protected:
     void mousePressEvent(QMouseEvent * ev);
+    void mouseMoveEvent(QMouseEvent * ev);
 
 private:
     bool isSendMouseClickPos = false;
+    bool isSendMouseMovePos = false;
 
 };
 

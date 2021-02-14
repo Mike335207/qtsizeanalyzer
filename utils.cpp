@@ -1,14 +1,11 @@
 #include "utils.h"
+#include "const.h"
 
 #include <iostream>
+#include <QDebug>
 
 using namespace cv;
 using namespace std;
-
-#define THRESH 50
-#define N 11
-
-#define GAUSS_KERN_SIZE 7
 
 
 // helper function:
@@ -42,7 +39,7 @@ void findSquares( const Mat& image, vector<vector<Point> >& squares )
         mixChannels(&timg, 1, &gray0, 1, ch, 1);
 
         // try several threshold levels
-        for( int l = 0; l < N; l++ )
+        for( int l = 0; l < _N; l++ )
         {
             // hack: use Canny instead of zero threshold level.
             // Canny helps to catch squares with gradient shading
@@ -59,7 +56,7 @@ void findSquares( const Mat& image, vector<vector<Point> >& squares )
             {
                 // apply threshold if l!=0:
                 //     tgray(x,y) = gray(x,y) < (l+1)*255/N ? 255 : 0
-                gray = gray0 >= (l+1)*255/N;
+                gray = gray0 >= (l+1)*255/_N;
             }
 
             // find contours and store them all as a list
@@ -110,7 +107,7 @@ void drawSquares( Mat& image, const vector<vector<Point> >& squares )
 {
     for( size_t i = 0; i < squares.size(); i++ )
     {
-        const Point* p = &squares[i][0];
+        const Point* p  = &squares[i][0];
         int n = (int)squares[i].size();
         polylines(image, &p, &n, 1, true, Scalar(0,255,0), 3, LINE_AA);
     }
@@ -119,55 +116,87 @@ void drawSquares( Mat& image, const vector<vector<Point> >& squares )
 }
 
 
-void detectAndMeasureObjects(Mat& input)
+vector<RotatedRect> detectSquares(Mat& input)
 {
     Mat grayImg, resultImg;
     input.copyTo(resultImg);
 
     cvtColor(input, grayImg, CV_BGRA2GRAY);
     GaussianBlur(grayImg, grayImg, Size(GAUSS_KERN_SIZE, GAUSS_KERN_SIZE), 0);
+    threshold(grayImg, grayImg, 127, 255, CV_THRESH_BINARY);
+
+    //imshow("GRAY_IMG", grayImg);
 
     //perform edge detection, then perform a dilation + erosion to
     //close gaps in between object edges
     Mat edgedImg;
     Canny(grayImg, edgedImg, 0, THRESH, 5);
-    dilate(edgedImg, edgedImg, Mat(), Point(-1,-1));
-    erode(edgedImg, edgedImg, getStructuringElement(MORPH_RECT, Size(3, 3)));
+    //dilate(edgedImg, edgedImg, Mat(), Point(-1,-1));
+    //erode(edgedImg, edgedImg, getStructuringElement(MORPH_RECT, Size(3, 3)));
 
-    imshow("EDGED_IMG", edgedImg);
-
+    //imshow("EDGED_IMG", edgedImg);
 
     //find contours in the edge map
     vector<vector<Point> > contours;
     findContours(edgedImg, contours, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
 
+
     // test each contour
     vector<Point> approx;
 
+    vector<RotatedRect> detectedSquares;
+
+    qDebug() << "countoursSize: " <<  contours.size();
     for( size_t i = 0; i < contours.size(); i++ )
     {
+
         approxPolyDP(contours[i], approx, arcLength(contours[i], true)*0.02, true);
 
-        if(fabs(contourArea(approx)) > 1000 && isContourConvex(approx) )
+        qDebug() << "countour: " << i << "; area = " << contourArea(approx);
+
+        if(fabs(contourArea(approx)) > 100 && isContourConvex(approx) )
         {
             RotatedRect box = minAreaRect(approx);
+            detectedSquares.push_back(box);
 
             Point2f vtx[4];
             box.points(vtx);
 
             // Draw the bounding box
-            for( i = 0; i < 4; i++)
+            for( int ii = 0; ii < 4; ii++)
             {
-                line(resultImg, vtx[i], vtx[(i+1)%4], Scalar(0, 255, 0), 1, LINE_AA);
-                circle(resultImg, vtx[i], 5, (0, 0, 255), -1);
+                line(resultImg, vtx[ii], vtx[(ii+1)%4], Scalar(0, 255, 0), 1, LINE_AA);
+                circle(resultImg, vtx[ii], 5, (0, 0, 255), -1);
             }
         }
 
     }
 
-    imshow("DetectedObjects", resultImg);
+    //imshow("DetectedObjects", resultImg);
 
 
+    return detectedSquares;
+}
 
+double calculatePixelSizeInMilimeters(RotatedRect box, int squareSideInMilimeters)
+{
+    Point2f vtx[4];
+    box.points(vtx);
+    double totalSqSidesInPixels = 0.0;
 
+    for(int i = 0; i < 3; i++)
+    {
+        totalSqSidesInPixels+= calculateDistanceBtw2Pnts(vtx[i], vtx[i+1]);
+    }
+
+    totalSqSidesInPixels+= calculateDistanceBtw2Pnts(vtx[0], vtx[3]);
+
+    double pixSize = squareSideInMilimeters*4/totalSqSidesInPixels;
+    qDebug() << "pixSize (mm) = " << pixSize;
+    return pixSize;
+}
+
+double calculateDistanceBtw2Pnts(Point2f pnt1, Point2f pnt2)
+{
+    return sqrt((pnt1.x - pnt2.x)*(pnt1.x - pnt2.x) + (pnt1.y - pnt2.y)*(pnt1.y - pnt2.y));
 }

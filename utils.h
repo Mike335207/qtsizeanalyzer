@@ -8,10 +8,13 @@
 
 #include <vector>
 
+double calculateDistanceBtw2Pnts(cv::Point2f pnt1, cv::Point2f pnt2);
+
 void findSquares(const cv::Mat& image, std::vector<std::vector<cv::Point> >& squares);
 void drawSquares(cv::Mat& image, const std::vector<std::vector<cv::Point> >& squares);
 
-void detectAndMeasureObjects(cv::Mat& input);
+std::vector<cv::RotatedRect> detectSquares(cv::Mat& input);
+double calculatePixelSizeInMilimeters(cv::RotatedRect box, int squareSideInMilimeters);
 
 
 

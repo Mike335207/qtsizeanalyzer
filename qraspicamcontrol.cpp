@@ -6,13 +6,15 @@
 
 #define TIMEOUT 100
 
-using namespace raspicam;
+#define PATH_TO_IMG "/home/rapsodo/workspace/work/TechSys/build-QtSizeAnalyzer-Desktop_Qt_5_11_1_GCC_64bit-Release/images/2019-10-20-01-10-56.jpeg"
+
+//using namespace raspicam;
 using namespace std;
 using namespace cv;
 
 QRaspiCamControl::QRaspiCamControl()
 {
-    camera = new RaspiCam_Cv();
+    /*camera = new RaspiCam_Cv();
 
     qDebug()<<"Connecting to camera"<<endl;
 
@@ -21,21 +23,41 @@ QRaspiCamControl::QRaspiCamControl()
     {
         qDebug() <<"Connected to camera ="<< QString::fromStdString(camera->getId()) << endl;
         isCamInited = true;
+    }*/
+
+    camStream = new VideoCapture(1);
+
+    if (!camStream->isOpened())
+    { //check if video device has been initialised
+        qDebug() << "cannot open camera";
+    }else
+    {
+         qDebug() << "Camera opened!!!!";
     }
+
+    camStream->set(cv::CAP_PROP_FRAME_WIDTH,1280);
+    camStream->set(cv::CAP_PROP_FRAME_HEIGHT,800);
 
 }
 
 QRaspiCamControl::~QRaspiCamControl()
 {
-    camera->release();
-    delete camera;
+    delete camStream;
 }
 
 Mat QRaspiCamControl::getFrame()
 {
     cv::Mat image;
-    camera->grab();
-    camera->retrieve(image);
+    camStream->grab();
+    camStream->retrieve(image);
+
+
+    //camStream->read(image);
+
+    //image = imread(PATH_TO_IMG);
+
+    qDebug() << image.rows << "x" << image.cols;
+
 
     return image;
 }

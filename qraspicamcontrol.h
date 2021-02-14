@@ -2,7 +2,10 @@
 #define QRASPICAMCONTROL_H
 
 #include <QObject>
-#include "raspicam_cv.h"
+//#include "raspicam_cv.h"
+#include "opencv2/core.hpp"
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 
 class QRaspiCamControl
@@ -17,8 +20,9 @@ public:
 
 
 private:
-    raspicam::RaspiCam_Cv *camera = NULL;
+    //raspicam::RaspiCam_Cv *camera = NULL;
     bool isCamInited = false;
+    cv::VideoCapture*  camStream;
 };
 
 #endif // QRASPICAMCONTROL_H

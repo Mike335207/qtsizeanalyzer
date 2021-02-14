@@ -23,16 +23,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 #RASPICAM
-unix:!macx: LIBS += -L$$PWD/../../../../usr/local/lib/ -lraspicam_cv
+#unix:!macx: LIBS += -L$$PWD/../../../../usr/local/lib/ -lraspicam_cv
 
 INCLUDEPATH += $$PWD/../../../../usr/local/include/raspicam
 DEPENDPATH += $$PWD/../../../../usr/local/include/raspicam
 
 #OPEN_CV
+
+INCLUDEPATH += /usr/local/include/opencv4/
+
 unix:!macx: LIBS += -lopencv_highgui
 unix:!macx: LIBS += -lopencv_core
 unix:!macx: LIBS += -lopencv_imgproc
 unix:!macx: LIBS += -lopencv_imgcodecs
+unix:!macx: LIBS += -lopencv_videoio
+unix:!macx: LIBS += -lopencv_video
+
 
 
 SOURCES += main.cpp\
@@ -40,13 +46,25 @@ SOURCES += main.cpp\
     qraspicamcontrol.cpp \
     qadditem.cpp \
     utils.cpp \
-    qdisplaylabel.cpp
+    qdisplaylabel.cpp \
+    qimageprocessingcontrol.cpp \
+    qitemeditor.cpp \
+    qitemcontroller.cpp
 
 HEADERS  += qsizeanalyzergui.h \
     qraspicamcontrol.h \
     qadditem.h \
     utils.h \
-    qdisplaylabel.h
+    qdisplaylabel.h \
+    qimageprocessingcontrol.h \
+    const.h \
+    struct.h \
+    qitemeditor.h \
+    qitemcontroller.h
 
 FORMS    += qsizeanalyzergui.ui \
-    qadditem.ui
+    qadditem.ui \
+    qitemeditor.ui \
+    qitemcontroller.ui
+
+RESOURCES +=

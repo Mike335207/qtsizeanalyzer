@@ -5,6 +5,8 @@
 
 #include "qraspicamcontrol.h"
 #include "qadditem.h"
+#include "qimageprocessingcontrol.h"
+#include "qitemcontroller.h"
 
 namespace Ui {
 class QSizeAnalyzerGUI;
@@ -25,12 +27,22 @@ private slots:
 
 
     void setFrameToAddItemDlg();
+    void performCalibration(cv::Mat& frame);
+
+    void extractItemSlot(cv::Mat& frame);
+
+    void setFrameToControlDlg();
+
+    void saveImage(cv::Mat& img);
+
 
 private:
     Ui::QSizeAnalyzerGUI *ui;
     QRaspiCamControl* cameraCtrl = NULL;
 
     QAddItem* dlgAddItem = NULL;
+    QImageProcessingControl* imgUtils = NULL;
+    QItemController* dlgItemControl = NULL;
 };
 
 #endif // QSIZEANALYZERGUI_H
